@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap"
+        rel="stylesheet">
+    <title>Bantu Bet - Plataforma Integrada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg,
+                    #667eea 0%,
+                    #764ba2 25%,
+                    #f093fb 50%,
+                    #f5576c 75%,
+                    #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+            overflow-x: hidden; 
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 20s infinite linear;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 70%;
+            left: 80%;
+            animation-delay: -5s;
+        }
+
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            left: 85%;
+            animation-delay: -10s;
+        }
+
+        .shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 80%;
+            left: 15%;
+            animation-delay: -15s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-20px) rotate(90deg);
+            }
+
+            50% {
+                transform: translateY(0px) rotate(180deg);
+            }
+
+            75% {
+                transform: translateY(20px) rotate(270deg);
+            }
+        }
+
+        /* Interface de Seleção de Casas de Apostas */
+        .casas-apostas-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(44, 62, 80, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .casas-apostas-sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .casas-apostas-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .casas-apostas-header h2 {
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .casas-apostas-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8em;
+        }
+
+        .casas-apostas-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .casa-aposta-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .casa-aposta-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .casa-aposta-item.selected {
+            background: rgba(3, 169, 244, 0.2);
+            border-color: #03A9F4;
+            box-shadow: 0 0 10px rgba(3, 169, 244, 0.3);
+        }
+
+        .casa-numero {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(3, 169, 244, 0.2);
+            border-radius: 50%;
+            color: #03A9F4;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .casa-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .casa-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .casa-info {
+            flex: 1;
+        }
+
+        .casa-nome {
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 3px;
+        }
+
+        .casa-status {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75em;
+        }
+
+        .status-online {
+            color: #4CAF50;
+        }
+
+        .status-offline {
+            color: #F44336;
+        }
+
+        .casas-apostas-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .casas-apostas-footer p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75em;
+            margin-bottom: 10px;
+        }
+
+        .key-hint {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            margin: 0 3px;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            position: relative;
+            transition: margin-left 0.3s ease;
+        }
+
+        .container.sidebar-visible {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+        }
+
+        .header {
+            background: linear-gradient(135deg,
+                    rgba(44, 62, 80, 0.9) 0%,
+                    rgba(74, 35, 90, 0.9) 100%);
+            color: white;
+            padding: 8px 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                    #03A9F4, #7C4DFF, #03A9F4);
+        }
+
+        .header h1 {
+            font-family: "Orbitron", sans-serif;
+            font-size: 1.3em;
+            margin-bottom: 6px;
+            text-shadow: 0 0 10px rgba(3, 169, 244, 0.5);
+            background: linear-gradient(45deg, #03A9F4, rgba(0, 247, 255, 0.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+
+
+        }
+
+        .header-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 8px;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        #Relogio_Digital {
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            text-align: center;
+            padding: 6px 4px;
+            background: linear-gradient(135deg,
+                    rgba(44, 62, 80, 0.9) 0%,
+                    rgba(52, 73, 94, 0.9) 100%);
+            color: #f3f3f3;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 80px;
+            width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 0 10px rgba(3, 169, 244, 0.5);
+            background: rgba(0, 247, 255, 0.3);
+        }
+
+        .time-generator {
+            background: rgba(0, 247, 255, 0.3);
+            padding: 6px 8px;
+            border-radius: 8px;
+            min-height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .generator-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .input-group label {
+            font-size: 0.65em;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .input-group input {
+            width: 40px;
+            padding: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            font-size: 0.75em;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #03A9F4;
+            box-shadow: 0 0 5px rgba(3, 169, 244, 0.5);
+        }
+
+        .btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #03A9F4, #0288D1);
+            color: white;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(3, 169, 244, 0.3);
+            font-family: "Orbitron", sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(3, 169, 244, 0.4);
+        }
+
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .generator-results {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .result-item {
+            background: rgba(0, 247, 255, 0.5);
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-align: center;
+            flex: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-title {
+            font-size: 0.50em;
+            opacity: 0.9;
+            margin-bottom: 1px;
+            color: rgba(255, 255, 255, 0.87);
+            text-shadow: 0 0 5px rgba(3, 169, 244, 0.5);
+            font-weight: bold;
+        }
+
+        .result-value {
+            font-size: 0.75em;
+            font-weight: bold;
+            color: #f3f3f3;
+            text-shadow: 0 0 5px rgba(3, 169, 244, 0.5);
+        }
+
+        .data-panel {
+            background: rgba(74, 35, 90, 0.9);
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(224, 224, 224, 0.5);
+            backdrop-filter: blur(5px);
+            height: 40px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .data-item {
+            background: linear-gradient(135deg,
+                    rgba(102, 126, 234, 0.9) 0%,
+                    rgba(118, 75, 162, 0.9) 100%);
+            color: white;
+            padding: 8px 6px;
+            border-radius: 8px;
+            text-align: center;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.2),
+                    transparent);
+            transition: left 0.5s ease;
+        }
+
+        .data-item:hover::before {
+            left: 100%;
+        }
+
+        .data-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .data-item h3 {
+            font-size: 0.7em;
+            margin-bottom: 2px;
+            opacity: 0.9;
+            font-weight: 600;
+        }
+
+        .data-item .value {
+            font-size: 0.85em;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .webview-container {
+            width: 100%;
+            height: 78vh;
+            border: none;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #TELA_BANTU_BET {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            width: 25px;
+            height: 25px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #03A9F4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .casas-apostas-sidebar {
+                width: 250px;
+            }
+
+            .container.sidebar-visible {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+
+            .header-content {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            #Relogio_Digital {
+                font-size: 0.85em;
+                padding: 5px 3px;
+                min-height: 35px;
+            }
+
+            .time-generator {
+                padding: 5px 6px;
+                min-height: 35px;
+            }
+
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-item {
+                min-height: 45px;
+                padding: 6px 4px;
+            }
+
+            .generator-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .generator-results {
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .webview-container {
+                height: 70vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .casas-apostas-sidebar {
+                width: 100%;
+            }
+
+            .container.sidebar-visible {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .header {
+                padding: 6px 8px;
+            }
+
+            .header h1 {
+                font-size: 1.1em;
+            }
+
+            .generator-controls {
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .data-item {
+                min-height: 40px;
+            }
+
+            .data-item h3 {
+                font-size: 0.65em;
+            }
+
+            .data-item .value {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Interface de Seleção de Casas de Apostas -->
+    <div class="casas-apostas-sidebar" id="casasApostasSidebar">
+        <div class="casas-apostas-header">
+            <h2>Casas de Apostas</h2>
+            <p>Selecione uma plataforma</p>
+        </div>
+
+        <div class="casas-apostas-list" id="casasApostasList">
+            <!-- As casas de apostas serão adicionadas dinamicamente via JavaScript -->
+        </div>
+
+        <div class="casas-apostas-footer">
+            <p>Navegação: <span class="key-hint">←</span> <span class="key-hint">→</span> para mostrar/ocultar</p>
+            <p><span class="key-hint">↑</span> <span class="key-hint">↓</span> para navegar</p>
+        </div>
+    </div>
+
+    <!-- Elementos de fundo animados -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <div class="header">
+            <h1>Light Vision Gms pro 2.3.0</h1>
+
+            <div class="header-content">
+                <!-- Relógio Digital -->
+                <div id="Relogio_Digital">00:00:00</div>
+
+                <!-- Gerador de Horários -->
+                <div class="time-generator">
+                    <div class="generator-controls">
+                        <div class="input-group">
+                            <label for="digito">Dígito:</label>
+                            <input type="number" id="digito" value="5" min="0" max="59">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="minutos">Minutos:</label>
+                            <input type="number" id="minutos" value="10" min="0" max="59">
+                        </div>
+
+                        <button id="generateBtn" class="btn">
+                            <img src="./Gms.jpeg" alt="Ícone" class="btn-icon">
+                            GMS-P
+
+                        </button>
+                    </div>
+
+                    <div class="generator-results">
+                        <div class="result-item">
+                            <div class="result-title">ENTRADA:</div>
+                            <div class="result-value" id="minutoEntrada">--:--:--</div>
+                        </div>
+
+                        <div class="result-item">
+                            <div class="result-title">VÁLIDO ATÉ:</div>
+                            <div class="result-value" id="validoAte">--:--:--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-panel">
+            <div class="data-grid">
+                <div class="data-item" id="protecaoContainer">
+                    <h3>PROTEÇÃO</h3>
+                    <div id="Protecao" class="value">--</div>
+                </div>
+                <div class="data-item" id="graficoContainer">
+                    <h3>GRÁFICO</h3>
+                    <div id="Grafico" class="value">--</div>
+                </div>
+                <div class="data-item" id="saidaContainer">
+                    <h3>SAÍDA</h3>
+                    <div id="Saida" class="value">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="webview-container" id="webviewContainer">
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner"></div>
+                <p>Carregando plataforma Light Vision Gms pro 2.3.0...</p>
+            </div>
+            <iframe id="TELA_BANTU_BET" src="about:blank" title="Plataforma Bantu Bet Integrada"
+                allow="autoplay; camera; microphone; fullscreen"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // URLs da plataforma
+        const PLATFORM_URL = "https://www.bantubet.co.ao/pt/";
+        const PLATFORM_URL_MOBILE = "https://m.bantubet.co.ao/";
+
+        // Elementos DOM
+        const Protecao = document.getElementById('Protecao');
+        const Saida = document.getElementById('Saida');
+        const Grafico = document.getElementById('Grafico');
+        const Relogio_Digital = document.getElementById('Relogio_Digital');
+        const iframe = document.getElementById('TELA_BANTU_BET');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const casasApostasSidebar = document.getElementById('casasApostasSidebar');
+        const casasApostasList = document.getElementById('casasApostasList');
+        const mainContainer = document.getElementById('mainContainer');
+
+        // Elementos do gerador de horários
+        const digitoInput = document.getElementById('digito');
+        const minutosInput = document.getElementById('minutos');
+        const generateBtn = document.getElementById('generateBtn');
+        const minutoEntrada = document.getElementById('minutoEntrada');
+        const validoAte = document.getElementById('validoAte');
+
+        // Dados das casas de apostas angolanas
+        const casasApostas = [
+            { id: 1, nome: "Bantu Bet", logo: "B", url: "https://www.bantubet.co.ao/pt/", status: "online" },
+            { id: 2, nome: "Elephant Bet Angola", logo: "EBA", url: "https://www.elephantbet.co.ao/pt/", status: "online" },
+            { id: 3, nome: "Mobet", logo: "MB", url: "https://m.mobet.ao/pt/", status: "online" },
+            { id: 4, nome: "Kwanza Bet", logo: "KB", url: "https://m.kwanzabet.ao/pt/", status: "online" },
+            { id: 5, nome: "Golden Bet Angola", logo: "G", url: "https://www.goldenbet.ao/games/", status: "online" },
+            { id: 6, nome: "888Bet", logo: "8", url: "https://888bets.co.ao/", status: "online" },
+            { id: 7, nome: "Premier Bet Angola", logo: "p", url: "https://www.premierbet.co.ao/bonus/register-welcome-bonus?btag=654437_549d7833207b4562ad9e2b90f48649ba&PremBet=1207-4446330c91327ea0&token=[token]&utm_medium=Netrefer/", status: "online" },
+            { id: 8, nome: "Betika Angola", logo: "B", url: "https://www.betika.com/ao/", status: "online" },
+            { id: 9, nome: "Operações Auto USD", logo: "OAUSD", url: "https://dbot.deriv.com/?account=demo", status: "online" },
+            { id: 10, nome: "Operações MT USD", logo: "MTUSD", url: "https://app.deriv.com/dtrader/?account=demo", status: "oline" },
+            { id: 11, nome: "Placa Curiosa", logo: "PC", url: "https://placacuriosa.trk.pro/login", status: "online" },
+
+        ];
+
+        // Estado da interface
+        let sidebarVisible = true;
+        let selectedCasaIndex = 0;
+
+        // Inicializar interface de casas de apostas
+        function initCasasApostas() {
+            casasApostasList.innerHTML = '';
+
+            casasApostas.forEach((casa, index) => {
+                const casaElement = document.createElement('div');
+                casaElement.className = `casa-aposta-item ${index === selectedCasaIndex ? 'selected' : ''}`;
+                casaElement.setAttribute('data-index', index);
+
+                casaElement.innerHTML = `
+                    <div class="casa-numero">${casa.id}</div>
+                    <div class="casa-logo">${casa.logo}</div>
+                    <div class="casa-info">
+                        <div class="casa-nome">${casa.nome}</div>
+                        <div class="casa-status ${casa.status === 'online' ? 'status-online' : 'status-offline'}">
+                            ${casa.status === 'online' ? 'Online' : 'Offline'}
+                        </div>
+                    </div>
+                `;
+
+                casaElement.addEventListener('click', () => {
+                    selectCasaAposta(index);
+                });
+
+                casasApostasList.appendChild(casaElement);
+            });
+        }
+
+        // Selecionar casa de apostas
+        function selectCasaAposta(index) {
+            selectedCasaIndex = index;
+
+            // Atualizar seleção visual
+            document.querySelectorAll('.casa-aposta-item').forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+
+            // Carregar a plataforma selecionada
+            const selectedCasa = casasApostas[index];
+            if (selectedCasa.status === 'online') {
+                loadPlatform(selectedCasa.url);
+            } else {
+                alert(`${selectedCasa.nome} está temporariamente offline. Por favor, selecione outra casa de apostas.`);
+            }
+        }
+
+        // Alternar visibilidade da sidebar
+        function toggleSidebar() {
+            sidebarVisible = !sidebarVisible;
+
+            if (sidebarVisible) {
+                casasApostasSidebar.classList.remove('hidden');
+                mainContainer.classList.add('sidebar-visible');
+            } else {
+                casasApostasSidebar.classList.add('hidden');
+                mainContainer.classList.remove('sidebar-visible');
+            }
+        }
+
+        // Navegar para cima na lista
+        function navigateUp() {
+            if (selectedCasaIndex > 0) {
+                selectCasaAposta(selectedCasaIndex - 1);
+                // Scroll para o item selecionado
+                const selectedElement = document.querySelector(`.casa-aposta-item[data-index="${selectedCasaIndex}"]`);
+                if (selectedElement) {
+                    selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        }
+
+        // Navegar para baixo na lista
+        function navigateDown() {
+            if (selectedCasaIndex < casasApostas.length - 1) {
+                selectCasaAposta(selectedCasaIndex + 1);
+                // Scroll para o item selecionado
+                const selectedElement = document.querySelector(`.casa-aposta-item[data-index="${selectedCasaIndex}"]`);
+                if (selectedElement) {
+                    selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        }
+
+        // Configurar navegação por teclado
+        function setupKeyboardNavigation() {
+            document.addEventListener('keydown', (event) => {
+                switch (event.key) {
+                    case 'ArrowLeft':
+                        toggleSidebar();
+                        break;
+                    case 'ArrowRight':
+                        toggleSidebar();
+                        break;
+                    case 'ArrowUp':
+                        if (sidebarVisible) {
+                            navigateUp();
+                        }
+                        break;
+                    case 'ArrowDown':
+                        if (sidebarVisible) {
+                            navigateDown();
+                        }
+                        break;
+                }
+            });
+        }
+
+        // Carregar plataforma
+        function loadPlatform(url = PLATFORM_URL) {
+            const platformUrl = window.innerWidth <= 768 ? PLATFORM_URL_MOBILE : url;
+
+            loadingOverlay.style.display = 'flex';
+            iframe.src = platformUrl;
+
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+
+                iframe.onload = function () {
+                    loadingOverlay.style.display = 'none';
+                };
+
+                iframe.onerror = function () {
+                    loadingOverlay.style.display = 'none';
+                    alert('Erro ao carregar a plataforma. Tente novamente.');
+                };
+            }, 2000);
+        }
+
+        // ===== GERADOR DE HORÁRIOS =====
+        function generateTimes() {
+            let repet = 0;
+
+            for (let _repeat11 = 0; _repeat11 < 2; _repeat11++) {
+                repet++;
+                const now = new Date();
+
+                // Obter componentes atuais do tempo
+                const H = now.getHours();
+                const m = now.getMinutes();
+                const s = now.getSeconds();
+
+                // Gerar segundos aleatórios entre segundos atuais e 59
+                const randomSec = Math.floor(Math.random() * (59 - s + 1)) + s;
+
+                // Obter valores dos inputs
+                const digitoValue = parseInt(digitoInput.value) || 0;
+                const minutosValue = parseInt(minutosInput.value) || 0;
+                const newMinutes = digitoValue + minutosValue;
+
+                // Formatar minutos e segundos com dois dígitos
+                const formattedMinutes = newMinutes.toString().padStart(2, '0');
+                const formattedSec = randomSec.toString().padStart(2, '0');
+
+                // Criar string TIME
+                const TIME = H + ":" + formattedMinutes + ":" + formattedSec;
+
+                if (repet === 1) {
+                    minutoEntrada.textContent = TIME;
+                }
+
+                // Criar string TIME2 com minutos aumentados em 1
+                const TIME2 = H + ":" + (newMinutes + 1).toString().padStart(2, '0') + ":" + formattedSec;
+
+                if (repet === 2) {
+                    validoAte.textContent = TIME2;
+                }
+            }
+        }
+
+        // Adicionar event listener ao botão
+        generateBtn.addEventListener('click', generateTimes);
+
+        // Gerar horários automaticamente ao carregar a página
+        window.addEventListener('load', generateTimes);
+
+        // Atualizar dados em tempo real
+        setInterval(function () {
+            const resultado = Math.random() > 0.5 ? "Azul" : "Roxo";
+
+            if (resultado === "Azul") {
+                Protecao.textContent = "1." + getRandomInt(1, 50) + "X";
+                Saida.textContent = "1." + getRandomInt(50, 90) + "X";
+                Grafico.textContent = getRandomInt(30, 60) + "%";
+            } else {
+                Protecao.textContent = "2.0X";
+                Saida.textContent = "2." + getRandomInt(1, 99) + "X";
+                Grafico.textContent = getRandomInt(75, 100) + "%";
+            }
+        }, 15000);
+
+        // Relógio digital
+        setInterval(function () {
+            const now = new Date();
+            Relogio_Digital.textContent = now.getHours() + ":" +
+                now.getMinutes().toString().padStart(2, '0') + ":" +
+                now.getSeconds().toString().padStart(2, '0');
+        }, 1000);
+
+        // Função auxiliar
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Inicializar
+        Protecao.textContent = "1." + getRandomInt(1, 50) + "X";
+        Saida.textContent = "1." + getRandomInt(50, 90) + "X";
+        Grafico.textContent = getRandomInt(30, 60) + "%";
+
+        // Inicializar interface de casas de apostas
+        initCasasApostas();
+        setupKeyboardNavigation();
+
+        // Carregar plataforma automaticamente
+        setTimeout(() => {
+            loadPlatform(casasApostas[selectedCasaIndex].url);
+        }, 1000);
+    </script>
+</body>
+
+</html>
