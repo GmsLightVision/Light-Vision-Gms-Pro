@@ -1,0 +1,18 @@
+# Dependências
+node_modules/
+
+# Build
+dist/
+build/
+apk-build/
+dist-build.log
+
+# Chaves e segredos
+codegpt-key.txt
+groq-key.txt
+ia-config.txt
+
+# Sistema
+.DS_Store
+.codegpt-game.json
+*.log

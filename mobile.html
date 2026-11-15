@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Light Vision">
+    <link rel="apple-touch-icon" href="Gms.jpeg">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <title>Light Vision Gms Pro Mobile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .header {
+            background: linear-gradient(135deg, rgba(44,62,80,.95), rgba(74,35,90,.95));
+            color: white;
+            padding: calc(10px + env(safe-area-inset-top)) 12px 8px;
+            text-align: center;
+        }
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1em;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #03A9F4, rgba(0,247,255,.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .bloco {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 8px;
+        }
+        .time-generator {
+            background: rgba(0,247,255,.15);
+            padding: 8px;
+            border-radius: 12px 0 0 12px;
+            width: min(92vw, 420px);
+        }
+        .generator-controls {
+            display: flex; justify-content: center; align-items: center;
+            gap: 8px; flex-wrap: wrap; margin-bottom: 6px;
+        }
+        .input-group { display: flex; align-items: center; gap: 4px; }
+        .input-group label { font-size: .68em; font-weight: 600; color: rgba(255,255,255,.9); }
+        .input-group input {
+            width: 42px; padding: 6px 2px; border: 1px solid rgba(255,255,255,.35);
+            border-radius: 6px; font-size: .85em; text-align: center;
+            background: rgba(255,255,255,.12); color: white;
+        }
+        .btn {
+            padding: 8px 12px; border: none; border-radius: 6px;
+            font-size: .75em; font-weight: 600; cursor: pointer;
+            background: linear-gradient(45deg, #03A9F4, #0288D1); color: white;
+            font-family: 'Orbitron', sans-serif;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn img { width: 18px; height: 18px; border-radius: 4px; }
+        .generator-results {
+            display: flex; gap: 4px;
+        }
+        .generator-results.grid-2col {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 4px;
+        }
+        .result-item {
+            background: rgba(0,247,255,.35); padding: 6px 4px;
+            border-radius: 6px; text-align: center; flex: 1;
+        }
+        .result-title { font-size: .55em; opacity: .9; font-weight: bold; }
+        .result-value { font-size: .85em; font-weight: bold; color: #fff; }
+        #Relogio_Digital {
+            font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 1.1em;
+            padding: 14px 16px; border-radius: 0 12px 12px 0;
+            background: linear-gradient(45deg, rgba(3,169,244,.4), rgba(0,247,255,.3));
+            color: white; display: flex; align-items: center; justify-content: center;
+        }
+        .iframe-wrap {
+            width: 100%; height: calc(100vh - 190px);
+            background: white; overflow: hidden;
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+        .hint {
+            color: rgba(255,255,255,.85); font-size: .7em; padding: 6px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Light Vision Gms Pro 2.3.0</h1>
+        <div class="bloco">
+            <div class="time-generator">
+                <div class="generator-controls">
+                    <div class="input-group">
+                        <label for="digito">Dígito:</label>
+                        <input type="number" id="digito" value="5" min="0" max="59" inputmode="numeric">
+                    </div>
+                    <div class="input-group">
+                        <label for="minutos">Min:</label>
+                        <input type="number" id="minutos" value="10" min="0" max="59" inputmode="numeric">
+                    </div>
+                    <div class="input-group">
+                        <label for="minutos2">Min 2:</label>
+                        <input type="number" id="minutos2" value="10" min="0" max="59" inputmode="numeric">
+                    </div>
+                    <button id="generateBtn" class="btn">
+                        <img src="Gms.jpeg" alt=""> GMS-P
+                    </button>
+                </div>
+                <div class="generator-results">
+                    <div class="result-item">
+                        <div class="result-title">ENTRADA</div>
+                        <div class="result-value" id="minutoEntrada">--:--:--</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-title">VÁLIDO ATÉ</div>
+                        <div class="result-value" id="validoAte">--:--:--</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-title">ENTRADA 2</div>
+                        <div class="result-value" id="minutoEntrada2">--:--:--</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-title">VÁLIDO 2</div>
+                        <div class="result-value" id="validoAte2">--:--:--</div>
+                    </div>
+                </div>
+            </div>
+            <div class="generator-results grid-2col">
+                <div class="result-item">
+                    <div class="result-title">ENTRADA 3</div>
+                    <div class="result-value" id="minutoEntrada3">--:--:--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-title">VÁLIDO 3</div>
+                    <div class="result-value" id="validoAte3">--:--:--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-title">ENTRADA 4</div>
+                    <div class="result-value" id="minutoEntrada4">--:--:--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-title">VÁLIDO 4</div>
+                    <div class="result-value" id="validoAte4">--:--:--</div>
+                </div>
+            </div>
+            <div id="Relogio_Digital">00:00:00</div>
+        </div>
+        <div class="hint">Plataforma abaixo — use o menu do site para navegar</div>
+    </div>
+
+    <div class="iframe-wrap">
+        <iframe id="plataforma" src="https://www.elephantbet.co.ao/pt/" allow="fullscreen"></iframe>
+    </div>
+
+    <script>
+        // Mesmos cálculos do app desktop
+        const digitoInput = document.getElementById('digito');
+        const minutosInput = document.getElementById('minutos');
+        const minutos2Input = document.getElementById('minutos2');
+        const minutoEntrada = document.getElementById('minutoEntrada');
+        const validoAte = document.getElementById('validoAte');
+        const minutoEntrada2 = document.getElementById('minutoEntrada2');
+        const validoAte2 = document.getElementById('validoAte2');
+        const minutoEntrada3 = document.getElementById('minutoEntrada3');
+        const validoAte3 = document.getElementById('validoAte3');
+        const minutoEntrada4 = document.getElementById('minutoEntrada4');
+        const validoAte4 = document.getElementById('validoAte4');
+        const Relogio_Digital = document.getElementById('Relogio_Digital');
+
+        function generateTimes() {
+            let repet = 0;
+            for (let i = 0; i < 2; i++) {
+                repet++;
+                const now = new Date();
+                const H = now.getHours();
+                const s = now.getSeconds();
+                const randomSec = Math.floor(Math.random() * (59 - s + 1)) + s;
+                const dv = parseInt(digitoInput.value) || 0;
+                const mv = parseInt(minutosInput.value) || 0;
+                const m2v = parseInt(minutos2Input.value) || 0;
+                const nm = dv + mv, nm2 = dv + m2v;
+                const fmt = n => String(n).padStart(2, '0');
+                const fs = fmt(randomSec);
+                if (repet === 1) {
+                    minutoEntrada.textContent = H + ':' + fmt(nm) + ':' + fs;
+                    minutoEntrada2.textContent = H + ':' + fmt(nm2) + ':' + fs;
+                    minutoEntrada3.textContent = H + ':' + fmt(nm2) + ':' + fs;
+                    minutoEntrada4.textContent = H + ':' + fmt(nm2) + ':' + fs;
+                } else {
+                    validoAte.textContent = H + ':' + fmt(nm + 1) + ':' + fs;
+                    validoAte2.textContent = H + ':' + fmt(nm2 + 1) + ':' + fs;
+                    validoAte3.textContent = H + ':' + fmt(nm2 + 1) + ':' + fs;
+                    validoAte4.textContent = H + ':' + fmt(nm2 + 1) + ':' + fs;
+                }
+            }
+        }
+        document.getElementById('generateBtn').addEventListener('click', generateTimes);
+        window.addEventListener('load', generateTimes);
+
+        setInterval(() => {
+            const n = new Date();
+            Relogio_Digital.textContent = n.getHours() + ':' +
+                String(n.getMinutes()).padStart(2,'0') + ':' +
+                String(n.getSeconds()).padStart(2,'0');
+        }, 1000);
+    </script>
+</body>
+</html>

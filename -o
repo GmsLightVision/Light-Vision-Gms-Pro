@@ -1,0 +1,17 @@
+HTTP/2 200 
+content-type: application/json
+content-length: 383
+x-amzn-requestid: 36034be5-6a39-4dbe-a780-7066334c8d86
+access-control-allow-origin: *
+x-amz-apigw-id: E8fPYFxXFiAEVUw=
+cache-control: public, max-age=600
+access-control-allow-methods: OPTIONS,GET
+x-amzn-trace-id: Root=1-6ac81261-a08ec592d7a0bd7a85b49cd8;Parent=61973659b6ef4a80;Sampled=0;Lineage=1:a49b3203:0
+date: Thu, 08 Oct 2026 22:00:01 GMT
+x-cache: Hit from cloudfront
+via: 1.1 6b8730e03bf0eca3f0f39d123393541c.cloudfront.net (CloudFront)
+x-amz-cf-pop: CPT51-P1
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: vCshJlkwftw3bq4dwt9kVArWV4v-XBA7A4rXRz_Pplxq8KVtT4gXEQ==
+age: 596
+

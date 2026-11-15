@@ -1,0 +1,16 @@
+{
+  "name": "Light Vision Gms Pro",
+  "short_name": "Light Vision",
+  "description": "Plataforma Light Vision Gms Pro 2.3.0 - Casas de apostas integradas",
+  "start_url": "./mobile.html",
+  "display": "standalone",
+  "background_color": "#2c3e50",
+  "theme_color": "#03A9F4",
+  "icons": [
+    {
+      "src": "Gms.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

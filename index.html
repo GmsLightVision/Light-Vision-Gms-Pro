@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap"
+        rel="stylesheet">
+    <title>Bantu Bet - Plataforma Integrada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg,
+                    #667eea 0%,
+                    #764ba2 25%,
+                    #f093fb 50%,
+                    #f5576c 75%,
+                    #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+            position: relative;
+            overflow-x: hidden; 
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 20s infinite linear;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 70%;
+            left: 80%;
+            animation-delay: -5s;
+        }
+
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            left: 85%;
+            animation-delay: -10s;
+        }
+
+        .shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 80%;
+            left: 15%;
+            animation-delay: -15s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-20px) rotate(90deg);
+            }
+
+            50% {
+                transform: translateY(0px) rotate(180deg);
+            }
+
+            75% {
+                transform: translateY(20px) rotate(270deg);
+            }
+        }
+
+        /* Interface de Seleção de Casas de Apostas */
+        .casas-apostas-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(44, 62, 80, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .casas-apostas-sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .casas-apostas-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .casas-apostas-header h2 {
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .casas-apostas-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8em;
+        }
+
+        .casas-apostas-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .casa-aposta-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .casa-aposta-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .casa-aposta-item.selected {
+            background: rgba(3, 169, 244, 0.2);
+            border-color: #03A9F4;
+            box-shadow: 0 0 10px rgba(3, 169, 244, 0.3);
+        }
+
+        .casa-numero {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(3, 169, 244, 0.2);
+            border-radius: 50%;
+            color: #03A9F4;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .casa-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .casa-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .casa-info {
+            flex: 1;
+        }
+
+        .casa-nome {
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 3px;
+        }
+
+        .casa-status {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75em;
+        }
+
+        .status-online {
+            color: #4CAF50;
+        }
+
+        .status-offline {
+            color: #F44336;
+        }
+
+        .casas-apostas-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .casas-apostas-footer p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75em;
+            margin-bottom: 10px;
+        }
+
+        .key-hint {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            margin: 0 3px;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            position: relative;
+            transition: margin-left 0.3s ease;
+        }
+
+        .container.sidebar-visible {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+        }
+
+        .header {
+            background: linear-gradient(135deg,
+                    rgba(44, 62, 80, 0.9) 0%,
+                    rgba(74, 35, 90, 0.9) 100%);
+            color: white;
+            padding: 8px 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                    #03A9F4, #7C4DFF, #03A9F4);
+        }
+
+        .header h1 {
+            font-family: "Orbitron", sans-serif;
+            font-size: 1.3em;
+            margin-bottom: 6px;
+            text-shadow: 0 0 10px rgba(3, 169, 244, 0.5);
+            background: linear-gradient(45deg, #03A9F4, rgba(0, 247, 255, 0.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+
+
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            flex-wrap: nowrap;
+            max-width: none;
+            margin: 0 auto;
+        }
+
+        #Relogio_Digital {
+            margin: 0;
+        }
+
+        .time-generator {
+            margin: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        #Relogio_Digital {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        #Relogio_Digital {
+            font-weight: bold;
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.9em;
+            text-align: center;
+            padding: 6px 12px;
+            margin: 0;
+            width: fit-content;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            /* Fundo com o mesmo gradiente do título Light Vision (mais transparente) */
+            background: linear-gradient(45deg, rgba(3, 169, 244, 0.35), rgba(0, 247, 255, 0.25));
+            color: white;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .time-generator {
+            background: rgba(0, 247, 255, 0.3);
+            padding: 8px 10px;
+            border-radius: 8px;
+            min-height: 40px;
+            max-width: 560px;
+            min-width: 420px;
+            width: fit-content;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .generator-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .input-group label {
+            font-size: 0.65em;
+            white-space: nowrap;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .input-group input {
+            width: 34px;
+            padding: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            font-size: 0.75em;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #03A9F4;
+            box-shadow: 0 0 5px rgba(3, 169, 244, 0.5);
+        }
+
+        .btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #03A9F4, #0288D1);
+            color: white;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(3, 169, 244, 0.3);
+            font-family: "Orbitron", sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(3, 169, 244, 0.4);
+        }
+
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .generator-results {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            flex: 1;
+        }
+
+        /* Bloco externo dos campos 3 e 4: grade de duas colunas */
+        .generator-results.grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 6px;
+            flex: none;
+        }
+
+        /* Duas linhas: controles em cima, os 4 resultados lado a lado embaixo */
+        .time-generator {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .time-generator .generator-results-wrap {
+            display: flex;
+            gap: 8px;
+        }
+
+        .generator-results-2 .result-item {
+            background: rgba(3, 169, 244, 0.25);
+            border: 1px solid rgba(3, 169, 244, 0.4);
+        }
+
+        .result-item {
+            background: rgba(0, 247, 255, 0.5);
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-align: center;
+            flex: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-title {
+            font-size: 0.50em;
+            opacity: 0.9;
+            margin-bottom: 1px;
+            color: rgba(255, 255, 255, 0.87);
+            text-shadow: 0 0 5px rgba(3, 169, 244, 0.5);
+            font-weight: bold;
+        }
+
+        .result-value {
+            font-size: 0.75em;
+            font-weight: bold;
+            color: #f3f3f3;
+            text-shadow: 0 0 5px rgba(3, 169, 244, 0.5);
+        }
+
+        /* Sinaliza os minutos que tinham "*" na tabela (amarelo/destaque) */
+        .result-value.com-asterisco {
+            color: #ffd54a;
+            text-shadow: 0 0 8px rgba(255, 193, 7, 0.9);
+        }
+
+        /* Dígitos da HORA destacados em rosa quando o minuto está na lista (07, 09, 11, 13, 15, 18, 20, 23) */
+        .result-value .hora-destaque {
+            color: #ff4fd8;
+            text-shadow: 0 0 8px rgba(255, 79, 216, 0.9);
+        }
+
+        /* Linha única: painéis + ENTRADA 2 lado a lado */
+        .linha-unica {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+            width: 100%;
+        }
+
+        .linha-unica .data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            max-width: 320px;
+            margin: 0;
+        }
+
+        .linha-unica .generator-results-2 {
+            max-width: 300px;
+            margin: 0;
+        }
+
+        /* Telefone: empilha verticalmente */
+        @media (max-width: 768px) {
+            .linha-unica {
+                flex-direction: column;
+            }
+        }
+
+        .data-panel {
+            background: rgba(74, 35, 90, 0.9);
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(224, 224, 224, 0.5);
+            backdrop-filter: blur(5px);
+            height: 40px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            max-width: 240px;
+            margin: 0 auto;
+        }
+
+        .data-item {
+            background: linear-gradient(135deg,
+                    rgba(102, 126, 234, 0.9) 0%,
+                    rgba(118, 75, 162, 0.9) 100%);
+            color: white;
+            padding: 6px 2px;
+            border-radius: 8px;
+            text-align: center;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.2),
+                    transparent);
+            transition: left 0.5s ease;
+        }
+
+        .data-item:hover::before {
+            left: 100%;
+        }
+
+        .data-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .data-item h3 {
+            font-size: 0.7em;
+            margin-bottom: 2px;
+            opacity: 0.9;
+            font-weight: 600;
+        }
+
+        .data-item .value {
+            font-size: 0.85em;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .webview-container {
+            width: 100%;
+            height: 78vh;
+            flex: 1;
+            min-height: 0;
+            margin: 0;
+            padding: 0;
+            border: none;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #TELA_BANTU_BET {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            width: 25px;
+            height: 25px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #03A9F4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Botão de alternar menu lateral (toque) */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1001;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(44, 62, 80, 0.9);
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s ease;
+        }
+
+        .sidebar-toggle:active {
+            background: rgba(3, 169, 244, 0.6);
+        }
+
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .sidebar-toggle.open .hamburger span:nth-child(1) {
+            transform: translateY(6px) rotate(45deg);
+        }
+
+        .sidebar-toggle.open .hamburger span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .sidebar-toggle.open .hamburger span:nth-child(3) {
+            transform: translateY(-6px) rotate(-45deg);
+        }
+
+        /* Overlay que fecha o menu ao tocar fora dele */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-toggle {
+                display: flex;
+            }
+        }
+
+        /* Telefone/tablet: menu fica sobreposto (overlay), sem deslocar nem distorcer a tela */
+        @media (max-width: 768px) {
+            .container.sidebar-visible {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .casas-apostas-sidebar {
+                width: 250px;
+            }
+
+            .container.sidebar-visible {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+
+            /* Header: empilha verticalmente em tablet */
+            .header-content {
+                flex-wrap: wrap;
+                max-width: 100%;
+                width: 100%;
+                gap: 6px;
+                padding: 4px;
+            }
+
+            .header-content > * {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .data-grid {
+                max-width: 100%;
+                flex: 1 1 100%;
+                order: -1;
+            }
+
+            #Relogio_Digital {
+                font-size: 0.85em;
+                padding: 5px 8px;
+                min-height: 35px;
+                max-width: none;
+                flex: 1 1 auto;
+            }
+
+            .time-generator {
+                padding: 5px 6px;
+                min-height: 35px;
+                max-width: none;
+                flex: 1 1 auto;
+            }
+
+            .data-item {
+                min-height: 45px;
+                padding: 6px 4px;
+            }
+
+            .generator-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .generator-results {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px;
+            }
+
+            .webview-container {
+                height: auto;
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .casas-apostas-sidebar {
+                width: 100%;
+            }
+
+            .container.sidebar-visible {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .header {
+                padding: 6px 8px;
+            }
+
+            .header h1 {
+                font-size: 1.1em;
+            }
+
+            /* Telefone: tudo empilhado, largura total */
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 5px;
+            }
+
+            .data-grid {
+                grid-template-columns: repeat(3, 1fr);
+                max-width: 100%;
+                gap: 4px;
+            }
+
+            .time-generator {
+                max-width: 100%;
+            }
+
+            .generator-controls {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px;
+            }
+
+            .input-group label {
+                font-size: 0.6em;
+            }
+
+            .input-group input {
+                width: 30px;
+                padding: 2px;
+                font-size: 0.7em;
+            }
+
+            .btn {
+                font-size: 0.75em;
+                padding: 5px 8px;
+            }
+
+            .data-item {
+                min-height: 40px;
+            }
+
+            .data-item h3 {
+                font-size: 0.6em;
+            }
+
+            .data-item .value {
+                font-size: 0.75em;
+            }
+
+            #Relogio_Digital {
+                font-size: 0.8em;
+                width: 100%;
+            }
+
+            .webview-container {
+                height: auto;
+                flex: 1;
+            }
+        }
+
+        /* Tablets em retrato e celulares grandes (entre 481px e 768px) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .data-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Telas grandes: header em linha única, centralizado */
+        @media (min-width: 769px) {
+            .header-content {
+                flex-wrap: nowrap;
+            }
+        }
+
+        /* Garante responsividade em qualquer largura */
+        .container {
+            width: 100%;
+            max-width: 100vw;
+            box-sizing: border-box;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            overflow-x: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+        <!-- Overlay para fechar o menu ao tocar fora -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Interface de Seleção de Casas de Apostas -->
+    <div class="casas-apostas-sidebar" id="casasApostasSidebar">
+        <div class="casas-apostas-header">
+            <h2>Casas de Apostas</h2>
+            <p>Selecione uma plataforma</p>
+        </div>
+
+        <div class="casas-apostas-list" id="casasApostasList">
+            <!-- As casas de apostas serão adicionadas dinamicamente via JavaScript -->
+        </div>
+
+        <div class="casas-apostas-footer">
+            <p>Navegação: <span class="key-hint">←</span> <span class="key-hint">→</span> para mostrar/ocultar</p>
+            <p><span class="key-hint">↑</span> <span class="key-hint">↓</span> para navegar</p>
+        </div>
+    </div>
+
+    <!-- Elementos de fundo animados -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <div class="header">
+            <h1>Light Vision Gms pro 2.3.0</h1>
+
+            <div class="header-content">
+
+                <!-- Gerador de Horários -->
+                <div class="time-generator">
+                    <div class="generator-controls">
+                        <div class="input-group">
+                            <label for="digito">Dígito:</label>
+                            <input type="number" id="digito" value="5" min="0" max="59">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="minutos">Minutos:</label>
+                            <input type="number" id="minutos" value="10" min="0" max="59">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="minutos2">Minutos 2:</label>
+                            <input type="number" id="minutos2" value="10" min="0" max="59">
+                        </div>
+
+                        <button id="generateBtn" class="btn">
+                            <img src="./Gms.jpeg" alt="Ícone" class="btn-icon">
+                            GMS-P
+
+                        </button>
+                    </div>
+
+                    <div class="generator-results">
+                        <div class="result-item">
+                            <div class="result-title">ENTRADA:</div>
+                            <div class="result-value" id="minutoEntrada">--:--:--</div>
+                        </div>
+
+                        <div class="result-item">
+                            <div class="result-title">VÁLIDO ATÉ:</div>
+                            <div class="result-value" id="validoAte">--:--:--</div>
+                        </div>
+
+                        <div class="result-item">
+                            <div class="result-title">ENTRADA 2:</div>
+                            <div class="result-value" id="minutoEntrada2">--:--:--</div>
+                        </div>
+
+                        <div class="result-item">
+                            <div class="result-title">VÁLIDO ATÉ 2:</div>
+                            <div class="result-value" id="validoAte2">--:--:--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generator-results grid-2col">
+                    <div class="result-item">
+                        <div class="result-title">ROXA 1:</div>
+                        <div class="result-value" id="minutoEntrada3">--:--:--</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-title">ROXA 2:</div>
+                        <div class="result-value" id="validoAte3">--:--:--</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-title">ROSA 1:</div>
+                        <div class="result-value" id="minutoEntrada4">--:--:--</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-title">ROSA 2:</div>
+                        <div class="result-value" id="validoAte4">--:--:--</div>
+                    </div>
+                </div>
+
+                <!-- Relógio Digital -->
+                <div id="Relogio_Digital">00:00:00</div>
+            </div>
+        </div>
+
+        <!-- Botões de abrir/fechar menu (toque) -->
+        <button id="sidebarToggle" class="sidebar-toggle" aria-label="Abrir/fechar menu">
+            <span class="hamburger">
+                <span></span><span></span><span></span>
+            </span>
+        </button>
+
+        <div class="webview-container" id="webviewContainer">
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner"></div>
+                <p>Carregando plataforma Light Vision Gms pro 2.3.0...</p>
+            </div>
+            <iframe id="TELA_BANTU_BET" src="about:blank" title="Plataforma Integrada"
+                allow="autoplay; fullscreen; clipboard-write"
+                style="width:100%; height:100%; border:none; display:inline-flex;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // URLs da plataforma
+        const PLATFORM_URL = "https://www.elephantbet.co.ao/pt/";
+        const PLATFORM_URL_MOBILE = "https://www.elephantbet.co.ao/pt/";
+
+        // Elementos DOM
+        const Relogio_Digital = document.getElementById('Relogio_Digital');
+        const webview = document.getElementById('TELA_BANTU_BET');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const casasApostasSidebar = document.getElementById('casasApostasSidebar');
+        const casasApostasList = document.getElementById('casasApostasList');
+        const mainContainer = document.getElementById('mainContainer');
+
+        // Elementos do gerador de horários
+        const digitoInput = document.getElementById('digito');
+        const minutosInput = document.getElementById('minutos');
+        const minutos2Input = document.getElementById('minutos2');
+        const generateBtn = document.getElementById('generateBtn');
+        const minutoEntrada = document.getElementById('minutoEntrada');
+        const validoAte = document.getElementById('validoAte');
+        const minutoEntrada2 = document.getElementById('minutoEntrada2');
+        const validoAte2 = document.getElementById('validoAte2');
+        const minutoEntrada3 = document.getElementById('minutoEntrada3');
+        const validoAte3 = document.getElementById('validoAte3');
+        const minutoEntrada4 = document.getElementById('minutoEntrada4');
+        const validoAte4 = document.getElementById('validoAte4');
+
+        // Dados das casas de apostas angolanas
+        const casasApostas = [
+            { id: 1, nome: "Bantu Bet", logo: "B", url: "https://www.bantubet.co.ao/pt/", status: "online" },
+            { id: 2, nome: "Elephant Bet Angola", logo: "EBA", url: "https://www.elephantbet.co.ao/pt/", status: "online" },
+            { id: 3, nome: "Mobet", logo: "MB", url: "https://m.mobet.ao/pt/", status: "online" },
+            { id: 4, nome: "Kwanza Bet", logo: "KB", url: "https://m.kwanzabet.ao/pt/", status: "online" },
+            { id: 5, nome: "Golden Bet Angola", logo: "G", url: "https://www.goldenbet.ao/games/", status: "online" },
+            { id: 6, nome: "888Bet", logo: "8", url: "https://888bets.co.ao/", status: "online" },
+            { id: 7, nome: "Premier Bet Angola", logo: "p", url: "https://www.premierbet.co.ao/bonus/register-welcome-bonus?btag=654437_549d7833207b4562ad9e2b90f48649ba&PremBet=1207-4446330c91327ea0&token=[token]&utm_medium=Netrefer/", status: "online" },
+            { id: 8, nome: "Betika Angola", logo: "B", url: "https://www.betika.com/ao/", status: "online" },
+            { id: 9, nome: "Operações Auto USD", logo: "OAUSD", url: "https://dbot.deriv.com/?account=demo", status: "online" },
+            { id: 10, nome: "Operações MT USD", logo: "MTUSD", url: "https://app.deriv.com/dtrader/?account=demo", status: "oline" },
+            { id: 11, nome: "Placa Curiosa", logo: "PC", url: "https://placacuriosa.trk.pro/login", status: "online" },
+
+        ];
+
+        // Estado da interface
+        let sidebarVisible = true;
+        let selectedCasaIndex = 0;
+
+        // Inicializar interface de casas de apostas
+        function initCasasApostas() {
+            casasApostasList.innerHTML = '';
+
+            casasApostas.forEach((casa, index) => {
+                const casaElement = document.createElement('div');
+                casaElement.className = `casa-aposta-item ${index === selectedCasaIndex ? 'selected' : ''}`;
+                casaElement.setAttribute('data-index', index);
+
+                casaElement.innerHTML = `
+                    <div class="casa-numero">${casa.id}</div>
+                    <div class="casa-logo">${casa.logo}</div>
+                    <div class="casa-info">
+                        <div class="casa-nome">${casa.nome}</div>
+                        <div class="casa-status ${casa.status === 'online' ? 'status-online' : 'status-offline'}">
+                            ${casa.status === 'online' ? 'Online' : 'Offline'}
+                        </div>
+                    </div>
+                `;
+
+                casaElement.addEventListener('click', () => {
+                    selectCasaAposta(index);
+                });
+
+                casasApostasList.appendChild(casaElement);
+            });
+        }
+
+        // Selecionar casa de apostas
+        function selectCasaAposta(index) {
+            selectedCasaIndex = index;
+
+            // Atualizar seleção visual
+            document.querySelectorAll('.casa-aposta-item').forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+
+            // Carregar a plataforma selecionada
+            const selectedCasa = casasApostas[index];
+            if (selectedCasa.status === 'online') {
+                loadPlatform(selectedCasa.url);
+            } else {
+                alert(`${selectedCasa.nome} está temporariamente offline. Por favor, selecione outra casa de apostas.`);
+            }
+        }
+
+        // Alternar visibilidade da sidebar
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function updateSidebarUi() {
+            const isMobile = window.innerWidth <= 768;
+            if (sidebarVisible) {
+                casasApostasSidebar.classList.remove('hidden');
+                sidebarToggle.classList.add('open');
+                if (isMobile) {
+                    sidebarOverlay.classList.add('visible');
+                } else {
+                    mainContainer.classList.add('sidebar-visible');
+                }
+            } else {
+                casasApostasSidebar.classList.add('hidden');
+                sidebarToggle.classList.remove('open');
+                sidebarOverlay.classList.remove('visible');
+                mainContainer.classList.remove('sidebar-visible');
+            }
+        }
+
+        function toggleSidebar() {
+            sidebarVisible = !sidebarVisible;
+            updateSidebarUi();
+        }
+
+        // Botão hamburguer (toque)
+        sidebarToggle.addEventListener('click', toggleSidebar);
+
+        // Tocar fora do menu fecha ele (telefone/tablet)
+        sidebarOverlay.addEventListener('click', () => {
+            if (sidebarVisible) toggleSidebar();
+        });
+
+        // Gesto de swipe: arrastar da borda esquerda abre, para a esquerda fecha
+        let touchStartX = 0;
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+            if (dy < 50 && Math.abs(dx) > 60) {
+                if (dx > 0 && touchStartX < 40 && !sidebarVisible) {
+                    toggleSidebar(); // swipe da esquerda para a direita: abre
+                } else if (dx < 0 && sidebarVisible) {
+                    toggleSidebar(); // swipe da direita para a esquerda: fecha
+                }
+            }
+        }, { passive: true });
+
+        // Navegar para cima na lista
+        function navigateUp() {
+            if (selectedCasaIndex > 0) {
+                selectCasaAposta(selectedCasaIndex - 1);
+                // Scroll para o item selecionado
+                const selectedElement = document.querySelector(`.casa-aposta-item[data-index="${selectedCasaIndex}"]`);
+                if (selectedElement) {
+                    selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        }
+
+        // Navegar para baixo na lista
+        function navigateDown() {
+            if (selectedCasaIndex < casasApostas.length - 1) {
+                selectCasaAposta(selectedCasaIndex + 1);
+                // Scroll para o item selecionado
+                const selectedElement = document.querySelector(`.casa-aposta-item[data-index="${selectedCasaIndex}"]`);
+                if (selectedElement) {
+                    selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        }
+
+        // Configurar navegação por teclado
+        function setupKeyboardNavigation() {
+            document.addEventListener('keydown', (event) => {
+                switch (event.key) {
+                    case 'ArrowLeft':
+                        toggleSidebar();
+                        break;
+                    case 'ArrowRight':
+                        toggleSidebar();
+                        break;
+                    case 'ArrowUp':
+                        if (sidebarVisible) {
+                            navigateUp();
+                        }
+                        break;
+                    case 'ArrowDown':
+                        if (sidebarVisible) {
+                            navigateDown();
+                        }
+                        break;
+                }
+            });
+        }
+
+        // Estado inicial correto da UI do menu
+        updateSidebarUi();
+
+        // Carregar plataforma
+        function loadPlatform(url = PLATFORM_URL) {
+            const platformUrl = window.innerWidth <= 768 ? PLATFORM_URL_MOBILE : url;
+
+            loadingOverlay.style.display = 'flex';
+
+            // Usa iframe para carregar (o Electron remove os headers bloqueadores
+            // no processo principal — x-frame-options/CSP/CORP — então o embed funciona)
+            webview.src = platformUrl;
+
+            webview.addEventListener('load', function () {
+                loadingOverlay.style.display = 'none';
+            });
+        }
+
+        // ===== GERADOR DE HORÁRIOS =====
+        // Tabela de velas extraída de "TABELA DEMINUTOS AERO.html"
+        // Cada linha: 1ª coluna roxa, 2ª coluna roxa, 1ª coluna rosa, 2ª coluna rosa
+        // (null = célula vazia na tabela)
+        const tabelaVelas = [
+            { roxa1: '00min:30seg', roxa2: '02min:20seg', rosa1: '00min:30seg', rosa2: '03min:12seg' },
+            { roxa1: '03min:00min', roxa2: '04min:20seg', rosa1: '07min:40seg*', rosa2: '09min:00seg*' },
+            { roxa1: '05min:45seg', roxa2: '06min:40seg', rosa1: null,           rosa2: '*11min:05seg*' },
+            { roxa1: '07min:10seg', roxa2: '07min:30seg', rosa1: '13min:32seg*', rosa2: '*16min:18seg*' },
+            { roxa1: '10min:50seg', roxa2: '11min:07seg', rosa1: '17min:20seg*', rosa2: '18min:15seg*' },
+            { roxa1: '14min:05seg', roxa2: '15min:52seg', rosa1: '19min:45seg',  rosa2: '21min:20seg' },
+            { roxa1: '16min:50seg', roxa2: '19min:25seg', rosa1: '22min:05seg',  rosa2: '24min:40seg' },
+            { roxa1: '19min:50seg', roxa2: '23min:02seg', rosa1: '25min:10seg',  rosa2: '29min:00seg*' },
+            { roxa1: '24min:12seg', roxa2: '24min:50seg', rosa1: '30min:57seg*', rosa2: '34min:30seg*' },
+            { roxa1: '26min:05seg', roxa2: '27min:12seg', rosa1: '37min:50seg*', rosa2: '41min:45seg' },
+            { roxa1: '27min:35...seg', roxa2: '28min:48seg', rosa1: '43min:50seg', rosa2: '44min:10seg*' },
+            { roxa1: '30min:05seg', roxa2: '31min:43seg', rosa1: '46min:50seg',  rosa2: '48min:00seg*' },
+            { roxa1: '32min:50seg', roxa2: '33min:40seg', rosa1: '50min:25seg',  rosa2: '51min:05seg' },
+            { roxa1: '37min:00seg', roxa2: '37min:50seg', rosa1: '53min:45seg',  rosa2: '56min:20seg*' },
+            { roxa1: '38min:56seg', roxa2: '46min:06seg', rosa1: '*57min:00seg*', rosa2: '59min:10seg' },
+            { roxa1: '46min:35seg', roxa2: '47min:17seg', rosa1: null,           rosa2: null },
+            { roxa1: '48:min:00seg', roxa2: '50min:10seg', rosa1: null,          rosa2: null },
+            { roxa1: '53min:10seg', roxa2: '53min:40seg', rosa1: null,           rosa2: null },
+            { roxa1: '56min:15seg', roxa2: '57min:05seg', rosa1: null,           rosa2: null }
+        ];
+        // Índice sequencial para percorrer a tabela em ordem (não aleatória)
+        let indiceTabela = 0;
+
+        function generateTimes() {
+            let repet = 0;
+
+            for (let _repeat11 = 0; _repeat11 < 2; _repeat11++) {
+                repet++;
+                const now = new Date();
+
+                // Obter componentes atuais do tempo
+                const H = now.getHours();
+                const m = now.getMinutes();
+                const s = now.getSeconds();
+
+                // Gerar segundos aleatórios entre segundos atuais e 59
+                const randomSec = Math.floor(Math.random() * (59 - s + 1)) + s;
+
+                // Obter valores dos inputs
+                const digitoValue = parseInt(digitoInput.value) || 0;
+                const minutosValue = parseInt(minutosInput.value) || 0;
+                const minutos2Value = parseInt(minutos2Input.value) || 0;
+                const newMinutes = digitoValue + minutosValue;       // 1º bloco: Dígito + Minutos
+                const newMinutes2 = digitoValue + minutos2Value;     // 2º bloco: Dígito + Minutos 2
+
+                // Formatar minutos e segundos com dois dígitos
+                const formattedMinutes = newMinutes.toString().padStart(2, '0');
+                const formattedSec = randomSec.toString().padStart(2, '0');
+
+                // Criar string TIME
+                const TIME = H + ":" + formattedMinutes + ":" + formattedSec;
+
+                // Converte valores da tabela de velas para o formato H:MM:SS
+                // (remove os sufixos "min" e "seg", deixando apenas os algarismos)
+                // Retorna também um flag indicando se o valor tinha "*" na tabela
+                const formatarVela = (txt) => {
+                    if (!txt) return null;
+                    const temAsterisco = txt.indexOf('*') !== -1;
+                    const nums = txt.replace(/[^0-9]/g, ' ').match(/\d+/g);
+                    if (!nums || nums.length < 2) return null;
+                    const mm = nums[0].padStart(2, '0');
+                    const ss = nums[1].padStart(2, '0');
+                    return { time: H + ":" + mm + ":" + ss, asterisco: temAsterisco };
+                };
+
+                // Horas destacadas: quando a HORA exibida é 07, 09, 11, 13, 15, 18, 20 ou 23,
+                // os dígitos da HORA devem aparecer em rosa nos campos ROXA 1, ROXA 2, ROSA 1 e ROSA 2
+                const horasDestaque = [7, 9, 11, 13, 15, 18, 20, 23];
+                const aplicarDestaqueHora = (el, hh, mm) => {
+                    const horaTxt = String(hh).padStart(2, '0');
+                    const minTxt = String(mm).padStart(2, '0');
+                    if (horasDestaque.includes(hh)) {
+                        el.innerHTML = '<span class="hora-destaque">' + horaTxt + '</span>';
+                    } else {
+                        el.textContent = horaTxt;
+                    }
+                    el.appendChild(document.createTextNode(':' + minTxt));
+                    return el;
+                };
+
+                if (repet === 1) {
+                    minutoEntrada.textContent = TIME;
+                    minutoEntrada2.textContent = H + ":" + newMinutes2.toString().padStart(2, '0') + ":" + formattedSec;
+
+                    // ===== VELAS DA TABELA (TABELA DEMINUTOS AERO.html) =====
+                    // Percorre a tabela em ordem sequencial (linha a linha),
+                    // sempre na mesma ordem das colunas, sem aleatoriedade.
+                    const linhaTabela = tabelaVelas[indiceTabela % tabelaVelas.length];
+                    indiceTabela++;
+                    if (linhaTabela) {
+                        const v1 = formatarVela(linhaTabela.roxa1);
+                        const v2 = formatarVela(linhaTabela.roxa2);
+                        const v3 = formatarVela(linhaTabela.rosa1);
+                        const v4 = formatarVela(linhaTabela.rosa2);
+                        const aplicarVela = (el, v) => {
+                            const partes = v.time.split(':'); // [hora, minuto, segundo]
+                            aplicarDestaqueHora(el, parseInt(partes[0], 10), parseInt(partes[1], 10));
+                            el.appendChild(document.createTextNode(':' + partes[2]));
+                            el.classList.toggle('com-asterisco', v.asterisco);
+                        };
+                        if (v1) aplicarVela(minutoEntrada3, v1);
+                        if (v2) aplicarVela(validoAte3, v2);
+                        if (v3) aplicarVela(minutoEntrada4, v3);
+                        if (v4) aplicarVela(validoAte4, v4);
+                    }
+                }
+
+                // Criar string TIME2 com minutos aumentados em 1
+                const TIME2 = H + ":" + (newMinutes + 1).toString().padStart(2, '0') + ":" + formattedSec;
+
+                if (repet === 2) {
+                    validoAte.textContent = TIME2;
+                    validoAte2.textContent = H + ":" + (newMinutes2 + 1).toString().padStart(2, '0') + ":" + formattedSec;
+                }
+            }
+        }
+
+        // ===== SINCRONIZAÇÃO AUTOMÁTICA COM O RELÓGIO DA PLATAFORMA =====
+        // Copia o minuto para "Dígito", o 1º algarismo dos segundos para "Minutos"
+        // e o 2º algarismo dos segundos para "Minutos 2"
+        // (ex: 23:32:57 -> digito=32, minutos=5, minutos2=7)
+        function syncFromClockTime(timeStr) {
+            const match = timeStr.match(/^(\d{1,2}):(\d{1,2}):(\d{2})$/);
+            if (!match) return false;
+            const minutos = match[2];
+            const primeiroSegundo = match[3].charAt(0);
+            const segundoSegundo = match[3].charAt(1);
+            digitoInput.value = minutos;
+            minutosInput.value = primeiroSegundo;
+            minutos2Input.value = segundoSegundo;
+            return true;
+        }
+
+        function sincronizarRelogio() {
+            // Lê relógios (HH:MM:SS) SOMENTE do conteúdo do webview (plataforma).
+            // Ignora o painel do próprio app (que também tem HH:MM:SS estáticos).
+            try {
+                if (webview && typeof webview.executeJavaScript === 'function') {
+                    var codigoBusca = "(function() {" +
+                        "function buscarNoDoc(doc) {" +
+                        "  if (!doc || !doc.body) return null;" +
+                        "  var el = doc.querySelector('.header__info-time');" +
+                        "  if (el) return el.textContent.trim();" +
+                        "  var cand = doc.querySelectorAll('div,span,p,td,li,a,h1,h2,h3,h4,h5,h6,label,strong,em,b,i');" +
+                        "  for (var i = 0; i < cand.length; i++) {" +
+                        "    var t = (cand[i].textContent || '').trim();" +
+                        "    if (/^\\d{1,2}:\\d{2}:\\d{2}$/.test(t)) return t;" +
+                        "  }" +
+                        "  return null;" +
+                        "}" +
+                        "var r = buscarNoDoc(document);" +
+                        "if (r) return r;" +
+                        "try {" +
+                        "  for (var f = 0; f < window.frames.length; f++) {" +
+                        "    try {" +
+                        "      var r2 = buscarNoDoc(window.frames[f].document);" +
+                        "      if (r2) return r2;" +
+                        "    } catch (e2) {}" +
+                        "  }" +
+                        "} catch (e) {}" +
+                        "return null;" +
+                    "})()";
+                    webview.executeJavaScript(codigoBusca, false).then(function (txt) {
+                        if (txt) {
+                            syncFromClockTime(txt);
+                            registrarHorario(txt);
+                        }
+                    }).catch(function () { /* frame descartado: tenta de novo no proximo segundo */ });
+                }
+            } catch (e) { /* webview ainda nao pronto */ }
+        }
+
+        // Obs: a busca corresponde a HH:MM:SS (ex: 01:21:12), inclusive com dois-pontos
+        // unicode (∶ U+2236 ou ： U+FF1A) usados por alguns sites.
+
+        // ===== HISTÓRICO + ANÁLISE IA =====
+        var historicoHorarios = [];
+        var ultimaAnaliseIA = null;
+
+        function registrarHorario(hhmmss) {
+            var m = hhmmss.match(/^(\d{1,2}):(\d{2})$/);
+            if (!m) return;
+            var item = { h: parseInt(m[1], 10), m: parseInt(m[2], 10), s: parseInt(m[3], 10), t: Date.now() };
+            var ultimo = historicoHorarios[historicoHorarios.length - 1];
+            if (ultimo && ultimo.h === item.h && ultimo.m === item.m && ultimo.s === item.s) return;
+            historicoHorarios.push(item);
+            if (historicoHorarios.length > 20) historicoHorarios.shift();
+            // A cada 3 novos horários, pede análise à IA
+            if (historicoHorarios.length >= 3 && historicoHorarios.length % 3 === 0) {
+                pedirAnaliseIA();
+            }
+        }
+
+        async function pedirAnaliseIA() {
+            if (typeof window.electronAPI === 'undefined' || !window.electronAPI.analisarComIA) return;
+            try {
+                var dados = {
+                    horarios: historicoHorarios.map(function (x) {
+                        return (x.h < 10 ? '0' + x.h : x.h) + ':' + (x.m < 10 ? '0' + x.m : x.m) + ':' + (x.s < 10 ? '0' + x.s : x.s);
+                    }),
+                    plataforma: 'aviator'
+                };
+                var r = await window.electronAPI.analisarComIA(dados);
+                if (r && r.ok && r.analise) {
+                    ultimaAnaliseIA = r.analise;
+                    console.log('[IA] Análise:', r.analise);
+                } else if (r && r.erro) {
+                    console.warn('[IA] Erro:', r.erro);
+                }
+            } catch (e) {
+                console.warn('[GLM] Falha na análise:', e);
+            }
+        }
+
+        // Sincroniza continuamente a cada segundo
+        setInterval(sincronizarRelogio, 1000);
+
+        // Captura vinda do processo principal (varredura de TODOS os frames do webview)
+        if (window.electronAPI && window.electronAPI.onHorariosEncontrados) {
+            window.electronAPI.onHorariosEncontrados(function (lista) {
+                if (!Array.isArray(lista) || !lista.length) return;
+                // Prioriza .header__info-time? Aqui só chegam HH:MM:SS; usa o 1º que muda.
+                var t = lista[0];
+                if (syncFromClockTime(t)) {
+                    registrarHorario(t);
+                }
+            });
+        }
+
+        // Adicionar event listener ao botão
+        generateBtn.addEventListener('click', generateTimes);
+
+        // Gerar horários automaticamente ao carregar a página
+        window.addEventListener('load', generateTimes);
+
+        // Relógio digital
+        setInterval(function () {
+            const now = new Date();
+            Relogio_Digital.textContent = now.getHours() + ":" +
+                now.getMinutes().toString().padStart(2, '0') + ":" +
+                now.getSeconds().toString().padStart(2, '0');
+        }, 1000);
+
+        // Função auxiliar
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Inicializar interface de casas de apostas
+        initCasasApostas();
+        setupKeyboardNavigation();
+
+        // Carregar plataforma automaticamente
+        setTimeout(() => {
+            loadPlatform(casasApostas[selectedCasaIndex].url);
+        }, 1000);
+    </script>
+</body>
+
+</html>

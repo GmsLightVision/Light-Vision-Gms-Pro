@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aviator Simulator</title>
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; padding: 0;
+    background: #1a1a2e;
+    color: #fff;
+}
+.container { max-width: 900px; margin: auto; padding: 20px; }
+h1 { text-align: center; margin-bottom: 20px; }
+.multiplier-container {
+    background: #0f3460; border-radius: 10px; padding: 20px; margin-bottom: 20px;
+    display: flex; justify-content: center; align-items: center;
+}
+.multiplier { font-size: 3em; font-weight: bold; transition: all 0.3s ease; }
+.dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+.card { background: #162447; padding: 15px; border-radius: 10px; text-align: center; }
+.card h2 { font-size: 1em; margin-bottom: 5px; }
+.card .value { font-size: 1.5em; font-weight: bold; }
+.canvas-container { background: #0f3460; border-radius: 10px; padding: 10px; }
+.controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+.controls input { padding: 5px; width: 60px; border-radius: 5px; border: none; text-align: center; }
+.controls button { padding: 5px 10px; border-radius: 5px; border: none; background: #03A9F4; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Aviator Simulator</h1>
+
+    <div class="multiplier-container">
+        <div class="multiplier" id="currentMultiplier">0.00x</div>
+    </div>
+
+    <div class="dashboard">
+        <div class="card">
+            <h2>Proteção</h2>
+            <div class="value" id="Protecao">--</div>
+        </div>
+        <div class="card">
+            <h2>Saída</h2>
+            <div class="value" id="Saida">--</div>
+        </div>
+        <div class="card">
+            <h2>Gráfico</h2>
+            <div class="value" id="Grafico">--%</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <input type="number" id="digito" placeholder="Dígito">
+        <input type="number" id="minutos" placeholder="Minutos">
+        <button id="generateBtn">Gerar Horários</button>
+    </div>
+
+    <div class="dashboard">
+        <div class="card">
+            <h2>Entrada</h2>
+            <div class="value" id="minutoEntrada">--:--:--</div>
+        </div>
+        <div class="card">
+            <h2>Válido Até</h2>
+            <div class="value" id="validoAte">--:--:--</div>
+        </div>
+        <div class="card">
+            <h2>Saída Hora</h2>
+            <div class="value" id="saidaHora">--:--:--</div>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="multiplierCanvas" width="860" height="200"></canvas>
+    </div>
+</div>
+
+<script>
+// Função auxiliar
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Variáveis do simulador
+let multiplier = 1.0;
+let multiplierHistory = [];
+const maxHistory = 100;
+const Protecao = document.getElementById('Protecao');
+const Saida = document.getElementById('Saida');
+const Grafico = document.getElementById('Grafico');
+const multiplierEl = document.getElementById('currentMultiplier');
+const canvas = document.getElementById('multiplierCanvas');
+const ctx = canvas.getContext('2d');
+
+// Atualiza dashboard
+function updateDashboard() {
+    multiplier += Math.random() * 0.1; // crescimento simulado
+    multiplier = parseFloat(multiplier.toFixed(2));
+
+    multiplierHistory.push(multiplier);
+    if (multiplierHistory.length > maxHistory) multiplierHistory.shift();
+
+    multiplierEl.textContent = multiplier.toFixed(2) + 'x';
+    Protecao.textContent = getRandomInt(1,50) + '.X';
+    Saida.textContent = getRandomInt(1,99) + '.X';
+    Grafico.textContent = getRandomInt(30,100) + '%';
+
+    drawGraph();
+}
+
+// Desenha gráfico do multiplicador
+function drawGraph() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.beginPath();
+    ctx.moveTo(0,canvas.height);
+    multiplierHistory.forEach((m,i)=>{
+        const x = i * (canvas.width / maxHistory);
+        const y = canvas.height - (m / 5 * canvas.height); // normalizado
+        ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle = '#03A9F4';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+}
+
+setInterval(updateDashboard, 500);
+updateDashboard();
+
+// Gerador de horários
+const generateBtn = document.getElementById('generateBtn');
+generateBtn.addEventListener('click', () => {
+    const digito = parseInt(document.getElementById('digito').value) || 0;
+    const minutos = parseInt(document.getElementById('minutos').value) || 0;
+    const now = new Date();
+    const entrada = new Date(now.getTime() + digito * 60000);
+    const validoAte = new Date(entrada.getTime() + minutos * 60000);
+    const saidaHora = new Date(validoAte.getTime() + 5 * 60000);
+
+    document.getElementById('minutoEntrada').textContent = entrada.toTimeString().split(' ')[0];
+    document.getElementById('validoAte').textContent = validoAte.toTimeString().split(' ')[0];
+    document.getElementById('saidaHora').textContent = saidaHora.toTimeString().split(' ')[0];
+});
+</script>
+</body>
+</html>

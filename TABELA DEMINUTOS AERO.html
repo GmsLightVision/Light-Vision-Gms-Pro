@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TABELA DE MINUTOS AERO - Horário das Velas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0b0f19;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 12px 60px;
+    }
+
+    /* Barra Superior de Ferramentas / Status */
+    .top-bar {
+      width: 100%;
+      max-width: 580px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .angola-clock {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+
+    .angola-clock .flag {
+      font-size: 18px;
+    }
+
+    .angola-clock .time {
+      color: #38bdf8;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-size: 15px;
+    }
+
+    .status-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-badge.active {
+      background: rgba(34, 197, 94, 0.18);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .status-badge.inactive {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 8px 12px 8px 34px;
+      font-size: 13px;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-box input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
+    .btn {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #334155;
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ==========================================
+       CONTAINER DA TABELA AERO (ESTILO ORIGINAL)
+       ========================================== */
+    .table-card {
+      background-color: #e6005c; /* Magenta vibrante original */
+      width: 100%;
+      max-width: 580px;
+      padding: 16px 14px 22px;
+      border-radius: 8px;
+      box-shadow: 0 16px 40px rgba(230, 0, 92, 0.35), 0 4px 16px rgba(0, 0, 0, 0.6);
+      transition: transform 0.2s ease;
+    }
+
+    /* Título AERO */
+    .header-aero {
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .header-aero h1 {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #0055b8; /* Azul cyan original */
+      text-transform: uppercase;
+      font-family: Impact, "Arial Black", sans-serif;
+      margin: 0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Linha dos Dias e Horário */
+    .header-sub {
+      text-align: center;
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .header-sub .dia-azul {
+      color: #0055b8;
+    }
+
+    .header-sub .dia-verde {
+      color: #10e050;
+    }
+
+    .header-sub .separador {
+      color: #003366;
+    }
+
+    .header-sub .texto-azul-escuro {
+      color: #002b66;
+      font-weight: 900;
+    }
+
+    /* Tabela Principal */
+    .aero-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 2px solid #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      background: #e6005c;
+    }
+
+    .aero-table th,
+    .aero-table td {
+      border: 1.5px solid #000000;
+      text-align: center;
+      padding: 5.5px 4px;
+      font-size: 14.5px;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: 0.2px;
+      transition: background-color 0.2s, transform 0.15s;
+    }
+
+    /* Linha HORAS */
+    .th-horas-title {
+      color: #002b66;
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 5px 6px 3px !important;
+      border-bottom: none !important;
+    }
+
+    .th-horas-times {
+      color: #ffffff;
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      padding: 3px 6px 7px !important;
+      border-top: none !important;
+      word-spacing: 1px;
+    }
+
+    .th-horas-times span.sep {
+      color: #0055b8;
+      font-weight: 900;
+      margin: 0 2px;
+    }
+
+    /* Cabeçalhos Velas Roxas / Velas Rosas */
+    .th-velas-roxas {
+      color: #000000;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 7px 4px !important;
+      border-right: 2px solid #000000 !important;
+    }
+
+    .th-velas-roxas .cor-roxa {
+      color: #3b0764; /* Roxo escuro */
+      font-weight: 900;
+    }
+
+    .th-velas-rosas {
+      color: #000000;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 7px 4px !important;
+    }
+
+    .th-velas-rosas .cor-rosa {
+      color: #0055b8; /* Azul das rosas conforme original */
+      font-weight: 900;
+    }
+
+    /* Colunas de Velas Roxas (Texto Branco) */
+    .td-roxa {
+      color: #ffffff;
+      width: 25%;
+    }
+
+    .td-roxa-divider {
+      border-right: 2px solid #000000 !important;
+    }
+
+    /* Colunas de Velas Rosas (Texto Azul/Ciano) */
+    .td-rosa {
+      color: #004fb0; /* Azul escuro vibrante conforme imagem */
+      width: 25%;
+    }
+
+    /* Célula Vazia */
+    .td-empty {
+      color: transparent;
+      user-select: none;
+    }
+
+    /* Efeitos de Hover / Destaque de Busca */
+    .aero-table tr:hover td {
+      background-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .aero-table td.highlight {
+      background-color: #facc15 !important;
+      color: #000000 !important;
+      transform: scale(1.04);
+      box-shadow: 0 0 10px #facc15;
+      border-color: #000 !important;
+      z-index: 2;
+      position: relative;
+    }
+
+    .aero-table td.current-signal {
+      background-color: #22c55e !important;
+      color: #ffffff !important;
+      animation: pulse-signal 1.2s infinite alternate;
+    }
+
+    @keyframes pulse-signal {
+      0% { box-shadow: 0 0 4px #22c55e; }
+      100% { box-shadow: 0 0 16px #4ade80, inset 0 0 8px #ffffff; }
+    }
+
+    /* Rodapé Informativo */
+    .footer-note {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #64748b;
+      text-align: center;
+      max-width: 580px;
+      line-height: 1.5;
+    }
+
+    .footer-note strong {
+      color: #94a3b8;
+    }
+
+    /* Estilo para Impressão */
+    @media print {
+      body {
+        background: none !important;
+        padding: 0;
+      }
+      .top-bar, .footer-note {
+        display: none !important;
+      }
+      .table-card {
+        box-shadow: none !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+    }
+
+    /* Ajustes Mobile */
+    @media (max-width: 480px) {
+      .header-aero h1 {
+        font-size: 26px;
+      }
+      .header-sub {
+        font-size: 11px;
+      }
+      .th-horas-times {
+        font-size: 11px;
+      }
+      .aero-table th, .aero-table td {
+        font-size: 12.5px;
+        padding: 4px 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA DE CONTROLO E STATUS DE ANGOLA -->
+  <div class="top-bar">
+    <div class="angola-clock">
+      <span class="flag">🇦🇴</span>
+      <span>Horário Angola (WAT / UTC+1):</span>
+      <span id="angolaClock" class="time">--:--:--</span>
+    </div>
+
+    <div id="statusBadge" class="status-badge inactive">
+      <span class="dot">●</span> <span id="statusText">Verificando Horário...</span>
+    </div>
+
+    <div class="actions">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="minuteFilter" placeholder="Filtrar minuto (ex: 27, 46, 00)..." oninput="filterMinutes(this.value)">
+      </div>
+      <button class="btn" onclick="window.print()" title="Imprimir ou Salvar em PDF">
+        🖨️ Imprimir
+      </button>
+      <button class="btn" onclick="clearHighlights()" title="Limpar Destaques">
+        ↺ Limpar
+      </button>
+    </div>
+  </div>
+
+  <!-- CARTÃO PRINCIPAL DA TABELA AERO -->
+  <div class="table-card">
+    
+    <!-- TÍTULO AERO -->
+    <div class="header-aero">
+      <h1>AERO</h1>
+    </div>
+
+    <!-- SUBTÍTULO COM DIAS E LOCALIZAÇÃO -->
+    <div class="header-sub">
+      <span class="dia-azul">TERÇA</span>
+      <span class="separador">-</span>
+      <span class="dia-verde">QUINTA</span>
+      <span class="separador">-</span>
+      <span class="dia-azul">SÁBADO</span>
+      &nbsp;
+      <span class="texto-azul-escuro">HORÁRIO DAS VELAS</span>
+      &nbsp;
+      <span class="texto-azul-escuro">EM ANGOLA</span>
+    </div>
+
+    <!-- TABELA COMPLETA COM 4 COLUNAS E 19 LINHAS DE DADOS -->
+    <table class="aero-table" id="aeroTable">
+      <thead>
+        <!-- LINHA HORAS -->
+        <tr>
+          <th colspan="4" class="th-horas-title">HORAS</th>
+        </tr>
+        <tr>
+          <th colspan="4" class="th-horas-times">
+            07:00:00-09:00:00 <span class="sep">--</span> 11:00:00-13:00:00 <span class="sep">--</span> 15:00:00-18:00:00 <span class="sep">--</span> 20:00:00-23:00:00
+          </th>
+        </tr>
+        <!-- CABEÇALHOS DAS VELAS -->
+        <tr>
+          <th colspan="2" class="th-velas-roxas">
+            Velas <span class="cor-roxa">Roxas</span>
+          </th>
+          <th colspan="2" class="th-velas-rosas">
+            Velas <span class="cor-rosa">Rosas</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Linha 1 -->
+        <tr>
+          <td class="td-roxa">00min:30seg</td>
+          <td class="td-roxa td-roxa-divider">02min:20seg</td>
+          <td class="td-rosa">00min:30seg</td>
+          <td class="td-rosa">03min:12seg</td>
+        </tr>
+        <!-- Linha 2 -->
+        <tr>
+          <td class="td-roxa">03min:00min</td>
+          <td class="td-roxa td-roxa-divider">04min:20seg</td>
+          <td class="td-rosa">07min:40seg*</td>
+          <td class="td-rosa">09min:00seg*</td>
+        </tr>
+        <!-- Linha 3 -->
+        <tr>
+          <td class="td-roxa">05min:45seg</td>
+          <td class="td-roxa td-roxa-divider">06min:40seg</td>
+          <td class="td-rosa td-empty">&nbsp;</td>
+          <td class="td-rosa">*11min:05seg*</td>
+        </tr>
+        <!-- Linha 4 -->
+        <tr>
+          <td class="td-roxa">07min:10seg</td>
+          <td class="td-roxa td-roxa-divider">07min:30seg</td>
+          <td class="td-rosa">13min:32seg*</td>
+          <td class="td-rosa">*16min:18seg*</td>
+        </tr>
+        <!-- Linha 5 -->
+        <tr>
+          <td class="td-roxa">10min:50seg</td>
+          <td class="td-roxa td-roxa-divider">11min:07seg</td>
+          <td class="td-rosa">17min:20seg*</td>
+          <td class="td-rosa">18min:15seg*</td>
+        </tr>
+        <!-- Linha 6 -->
+        <tr>
+          <td class="td-roxa">14min:05seg</td>
+          <td class="td-roxa td-roxa-divider">15min:52seg</td>
+          <td class="td-rosa">19min:45seg</td>
+          <td class="td-rosa">21min:20seg</td>
+        </tr>
+        <!-- Linha 7 -->
+        <tr>
+          <td class="td-roxa">16min:50seg</td>
+          <td class="td-roxa td-roxa-divider">19min:25seg</td>
+          <td class="td-rosa">22min:05seg</td>
+          <td class="td-rosa">24min:40seg</td>
+        </tr>
+        <!-- Linha 8 -->
+        <tr>
+          <td class="td-roxa">19min:50seg</td>
+          <td class="td-roxa td-roxa-divider">23min:02seg</td>
+          <td class="td-rosa">25min:10seg</td>
+          <td class="td-rosa">29min:00seg*</td>
+        </tr>
+        <!-- Linha 9 -->
+        <tr>
+          <td class="td-roxa">24min:12seg</td>
+          <td class="td-roxa td-roxa-divider">24min:50seg</td>
+          <td class="td-rosa">30min:57seg*</td>
+          <td class="td-rosa">34min:30seg*</td>
+        </tr>
+        <!-- Linha 10 -->
+        <tr>
+          <td class="td-roxa">26min:05seg</td>
+          <td class="td-roxa td-roxa-divider">27min:12seg</td>
+          <td class="td-rosa">37min:50seg*</td>
+          <td class="td-rosa">41min:45seg</td>
+        </tr>
+        <!-- Linha 11 -->
+        <tr>
+          <td class="td-roxa">27min:35...seg</td>
+          <td class="td-roxa td-roxa-divider">28min:48seg</td>
+          <td class="td-rosa">43min:50seg</td>
+          <td class="td-rosa">44min:10seg*</td>
+        </tr>
+        <!-- Linha 12 -->
+        <tr>
+          <td class="td-roxa">30min:05seg</td>
+          <td class="td-roxa td-roxa-divider">31min:43seg</td>
+          <td class="td-rosa">46min:50seg</td>
+          <td class="td-rosa">48min:00seg*</td>
+        </tr>
+        <!-- Linha 13 -->
+        <tr>
+          <td class="td-roxa">32min:50seg</td>
+          <td class="td-roxa td-roxa-divider">33min:40seg</td>
+          <td class="td-rosa">50min:25seg</td>
+          <td class="td-rosa">51min:05seg</td>
+        </tr>
+        <!-- Linha 14 -->
+        <tr>
+          <td class="td-roxa">37min:00seg</td>
+          <td class="td-roxa td-roxa-divider">37min:50seg</td>
+          <td class="td-rosa">53min:45seg</td>
+          <td class="td-rosa">56min:20seg*</td>
+        </tr>
+        <!-- Linha 15 -->
+        <tr>
+          <td class="td-roxa">38min:56seg</td>
+          <td class="td-roxa td-roxa-divider">46min:06seg</td>
+          <td class="td-rosa">*57min:00seg*</td>
+          <td class="td-rosa">59min:10seg</td>
+        </tr>
+        <!-- Linha 16 -->
+        <tr>
+          <td class="td-roxa">46min:35seg</td>
+          <td class="td-roxa td-roxa-divider">47min:17seg</td>
+          <td class="td-rosa td-empty">&nbsp;</td>
+          <td class="td-rosa td-empty">&nbsp;</td>
+        </tr>
+        <!-- Linha 17 -->
+        <tr>
+          <td class="td-roxa">48:min:00seg</td>
+          <td class="td-roxa td-roxa-divider">50min:10seg</td>
+          <td class="td-rosa td-empty">&nbsp;</td>
+          <td class="td-rosa td-empty">&nbsp;</td>
+        </tr>
+        <!-- Linha 18 -->
+        <tr>
+          <td class="td-roxa">53min:10seg</td>
+          <td class="td-roxa td-roxa-divider">53min:40seg</td>
+          <td class="td-rosa td-empty">&nbsp;</td>
+          <td class="td-rosa td-empty">&nbsp;</td>
+        </tr>
+        <!-- Linha 19 -->
+        <tr>
+          <td class="td-roxa">56min:15seg</td>
+          <td class="td-roxa td-roxa-divider">57min:05seg</td>
+          <td class="td-rosa td-empty">&nbsp;</td>
+          <td class="td-rosa td-empty">&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="footer-note">
+    Tabela organizada de acordo com o padrão original de <strong>Velas Roxas</strong> e <strong>Velas Rosas</strong>.<br>
+    Dias de operação: <strong>Terça, Quinta e Sábado</strong> | Fusos: <strong>Horário de Angola (WAT / UTC+1)</strong>.
+  </div>
+
+  <script>
+    // Relógio e Verificador de Janela de Horário de Angola (UTC+1)
+    function updateAngolaClock() {
+      // Obter hora em Luanda / Angola (UTC+1)
+      const now = new Date();
+      const options = {
+        timeZone: 'Africa/Luanda',
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        weekday: 'short'
+      };
+      
+      const formatter = new Intl.DateTimeFormat('pt-PT', options);
+      const parts = formatter.formatToParts(now);
+      let hour = 0, minute = 0, second = 0;
+      
+      parts.forEach(p => {
+        if (p.type === 'hour') hour = parseInt(p.value, 10);
+        if (p.type === 'minute') minute = parseInt(p.value, 10);
+        if (p.type === 'second') second = parseInt(p.value, 10);
+      });
+
+      const pad = (n) => String(n).padStart(2, '0');
+      const timeStr = `${pad(hour)}:${pad(minute)}:${pad(second)}`;
+      document.getElementById('angolaClock').textContent = timeStr;
+
+      // Janelas de horário:
+      // 07:00:00-09:00:00 | 11:00:00-13:00:00 | 15:00:00-18:00:00 | 20:00:00-23:00:00
+      const inWindow1 = (hour >= 7 && hour < 9);
+      const inWindow2 = (hour >= 11 && hour < 13);
+      const inWindow3 = (hour >= 15 && hour < 18);
+      const inWindow4 = (hour >= 20 && hour < 23);
+
+      const isActive = inWindow1 || inWindow2 || inWindow3 || inWindow4;
+      const badge = document.getElementById('statusBadge');
+      const text = document.getElementById('statusText');
+
+      if (isActive) {
+        badge.className = 'status-badge active';
+        text.textContent = 'Janela Ativa';
+      } else {
+        badge.className = 'status-badge inactive';
+        text.textContent = 'Fora da Janela';
+      }
+    }
+
+    // Filtro e destaque de minutos
+    function filterMinutes(query) {
+      const q = query.trim().toLowerCase();
+      const cells = document.querySelectorAll('#aeroTable tbody td');
+      
+      cells.forEach(td => {
+        td.classList.remove('highlight');
+        if (q && !td.classList.contains('td-empty')) {
+          if (td.textContent.toLowerCase().includes(q)) {
+            td.classList.add('highlight');
+          }
+        }
+      });
+    }
+
+    function clearHighlights() {
+      document.getElementById('minuteFilter').value = '';
+      const cells = document.querySelectorAll('#aeroTable tbody td');
+      cells.forEach(td => td.classList.remove('highlight'));
+    }
+
+    setInterval(updateAngolaClock, 1000);
+    updateAngolaClock();
+  </script>
+</body>
+</html>
