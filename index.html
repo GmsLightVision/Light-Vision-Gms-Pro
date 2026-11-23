@@ -1277,51 +1277,19 @@
         // Estado inicial correto da UI do menu
         updateSidebarUi();
 
-        // Deteta se estamos dentro do Electron (desktop) — só o Electron remove
-        // os cabeçalhos (x-frame-options/CSP) que bloqueiam iframes
-        const isElectron = !!(window.electronAPI || /Electron/i.test(navigator.userAgent));
-
         // Carregar plataforma
         function loadPlatform(url = PLATFORM_URL) {
-            // No telemóvel/tablet (Capacitor/Android) as casas de apostas bloqueiam
-            // a exibição dentro de iframe/WebView. Abre no navegador do sistema.
-            if (!isElectron) {
-                abrirNoNavegador(url);
-                loadingOverlay.style.display = 'none';
-                return;
-            }
-
-            const platformUrl = url;
+            const platformUrl = window.innerWidth <= 768 ? PLATFORM_URL_MOBILE : url;
 
             loadingOverlay.style.display = 'flex';
 
-            // Usa iframe para carregar (o Electron remove os cabeçalhos bloqueadores
+            // Usa iframe para carregar (o Electron remove os headers bloqueadores
             // no processo principal — x-frame-options/CSP/CORP — então o embed funciona)
             webview.src = platformUrl;
 
             webview.addEventListener('load', function () {
                 loadingOverlay.style.display = 'none';
             });
-        }
-
-        // Abre um link no navegador do sistema (fora do WebView do app)
-        function abrirNoNavegador(url) {
-            try {
-                // Capacitor: links com target="_blank" abrem no navegador externo
-                const a = document.createElement('a');
-                a.href = url;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                // Fallback caso o clique em <a> não funcione
-                setTimeout(() => {
-                    try { window.open(url, '_blank', 'noopener'); } catch (e) {}
-                }, 300);
-            } catch (e) {
-                window.open(url, '_blank', 'noopener');
-            }
         }
 
         // ===== GERADOR DE HORÁRIOS =====
